@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-  <title>Code_in_tech — Sistema Integrado ERP, PDV & CRM (Cloud)</title>
+  <title>Code_in_tech — Sistema Integrado ERP, PDV & CRM</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -117,9 +116,12 @@
 
     #login-view {
       position: relative; z-index: 1; min-height: 100vh;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 16px;
+      display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 20px 16px;
     }
-    .login-top-bar { width: 100%; max-width: 440px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .login-center-stage {
+      width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1;
+    }
+    .login-top-bar { width: 100%; max-width: 440px; display: flex; justify-content: flex-end; align-items: center; margin-bottom: 12px; }
     .login-card {
       width: 100%; max-width: 440px; background: var(--bg-surface);
       border: 1px solid var(--border); border-radius: 16px; padding: 28px 24px; box-shadow: var(--shadow-lg);
@@ -156,7 +158,7 @@
     .tab-btn:hover { color: var(--text-primary); background: var(--bg-elevated); }
     .tab-btn.active { background: var(--blue-soft); color: var(--blue); border-color: rgba(37, 99, 235, 0.35); }
 
-    .main-container { width: 100%; max-width: 1360px; margin: 0 auto; padding: 20px 16px 80px; flex: 1; }
+    .main-container { width: 100%; max-width: 1360px; margin: 0 auto; padding: 20px 16px 36px; flex: 1; }
 
     .table-wrap { width: 100%; overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-surface); }
     table { width: 100%; border-collapse: collapse; min-width: 620px; }
@@ -184,6 +186,7 @@
         display: flex; align-items: center; justify-content: space-between; gap: 12px;
         padding: 10px 16px; background: var(--bg-surface); border-top: 1px solid var(--border); box-shadow: var(--shadow-lg);
       }
+      .app-footer-pdv-space { padding-bottom: 76px !important; }
     }
 
     .chart-box { width: 100%; overflow-x: auto; padding-top: 8px; }
@@ -200,6 +203,20 @@
     #toast-container { position: fixed; top: 16px; right: 16px; z-index: 80; display: flex; flex-direction: column; gap: 8px; max-width: 340px; }
     .toast { padding: 12px 14px; border-radius: var(--radius-sm); background: var(--bg-surface); border: 1px solid var(--border); border-left: 4px solid var(--blue); box-shadow: var(--shadow-lg); font-size: 13.5px; font-weight: 500; }
     .toast.error { border-left-color: var(--red); }
+
+    /* Rodapé */
+    .site-footer {
+      width: 100%;
+      padding: 16px;
+      text-align: center;
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+    .app-footer {
+      border-top: 1px solid var(--border);
+      background: var(--bg-surface);
+      margin-top: auto;
+    }
 
     #print-area { display: none; }
     @media print {
@@ -218,35 +235,40 @@
 
   <!-- LOGIN -->
   <section id="login-view">
-    <div class="login-top-bar">
-      <button class="btn btn-sm" type="button" onclick="openSupabaseSetupModal()" id="sb-status-btn">Configurar Banco</button>
-      <button class="btn btn-sm" type="button" onclick="toggleTheme()" id="theme-btn-login">Tema: Escuro</button>
-    </div>
-
-    <div class="login-card">
-      <div class="logo-center-wrap" id="login-logo-slot"></div>
-
-      <div style="text-align:center; margin-bottom: 18px;">
-        <h1 style="font-size: 20px; font-weight: 700;">Acesso ao Sistema</h1>
-        <p class="text-muted" style="font-size: 13px; margin-top: 4px;">
-          Autenticação em nuvem via Supabase. Entre para acessar seu painel exclusivo.
-        </p>
+    <div class="login-center-stage">
+      <div class="login-top-bar">
+        <button class="btn btn-sm" type="button" onclick="toggleTheme()" id="theme-btn-login">Tema: Escuro</button>
       </div>
 
-      <div id="login-alert" class="hidden" style="margin-bottom:14px; padding:10px 12px; border-radius:8px; background:var(--red-soft); border:1px solid rgba(220,38,38,0.35); color:var(--red); font-size:13px;"></div>
+      <div class="login-card">
+        <div class="logo-center-wrap" id="login-logo-slot"></div>
 
-      <form onsubmit="handleLogin(event)" novalidate>
-        <div class="form-group">
-          <label class="form-label" for="login-email">E-mail corporativo</label>
-          <input class="input" id="login-email" type="email" placeholder="usuario@codeintech.com" autocomplete="username" required />
+        <div style="text-align:center; margin-bottom: 18px;">
+          <h1 style="font-size: 20px; font-weight: 700;">Acesso ao Sistema</h1>
+          <p class="text-muted" style="font-size: 13px; margin-top: 4px;">
+            Entre com seu e-mail e senha corporativa para acessar seu painel.
+          </p>
         </div>
-        <div class="form-group">
-          <label class="form-label" for="login-password">Senha</label>
-          <input class="input" id="login-password" type="password" placeholder="••••••••" autocomplete="current-password" required />
-        </div>
-        <button class="btn btn-primary w-full" type="submit" id="login-submit-btn">Entrar no Sistema</button>
-      </form>
+
+        <div id="login-alert" class="hidden" style="margin-bottom:14px; padding:10px 12px; border-radius:8px; background:var(--red-soft); border:1px solid rgba(220,38,38,0.35); color:var(--red); font-size:13px;"></div>
+
+        <form onsubmit="handleLogin(event)" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="login-email">E-mail corporativo</label>
+            <input class="input" id="login-email" type="email" placeholder="usuario@codeintech.com" autocomplete="username" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="login-password">Senha</label>
+            <input class="input" id="login-password" type="password" placeholder="••••••••" autocomplete="current-password" required />
+          </div>
+          <button class="btn btn-primary w-full" type="submit" id="login-submit-btn">Entrar no Sistema</button>
+        </form>
+      </div>
     </div>
+
+    <footer class="site-footer">
+      &copy; 2026 <strong>Code_in_tech</strong> — Soluções em T.I. Todos os direitos reservados.
+    </footer>
   </section>
 
   <!-- APP -->
@@ -283,6 +305,10 @@
     </nav>
 
     <main class="main-container" id="main-content"></main>
+
+    <footer class="site-footer app-footer" id="app-footer">
+      &copy; 2026 <strong>Code_in_tech</strong> — Soluções em T.I. Todos os direitos reservados.
+    </footer>
   </section>
 
   <div id="modal-root" class="modal-backdrop hidden" onclick="if(event.target===this) closeModal()">
@@ -296,74 +322,15 @@
   'use strict';
 
   /* =========================================================
-     CONFIGURAÇÃO DO SUPABASE (COLE SUAS CHAVES AQUI)
+     CREDENCIAIS SUPABASE CONFIGURADAS NO CÓDIGO
      ========================================================= */
-  const DEFAULT_SUPABASE_URL = 'COLE_SUA_PROJECT_URL_AQUI';
-  const DEFAULT_SUPABASE_ANON_KEY = 'COLE_SUA_ANON_KEY_AQUI';
+  const SUPABASE_URL = 'https://mtfizkxtcwpdbjuigpyy.supabase.co';
+  const SUPABASE_PUBLIC_KEY = 'sb_publishable_oBloZLCRpR65pnAxj6ExuQ_bdmM4ibj';
 
-  const SB_CFG_KEY = 'codeintech_supabase_cfg';
   const THEME_KEY = 'codeintech_theme';
   const LOCK_KEY = 'codeintech_login_lock';
 
-  function getSupabaseConfig() {
-    if (!DEFAULT_SUPABASE_URL.startsWith('COLE_') && !DEFAULT_SUPABASE_ANON_KEY.startsWith('COLE_')) {
-      return { url: DEFAULT_SUPABASE_URL.trim(), key: DEFAULT_SUPABASE_ANON_KEY.trim() };
-    }
-    try {
-      const saved = JSON.parse(localStorage.getItem(SB_CFG_KEY) || '{}');
-      if (saved.url && saved.key) return saved;
-    } catch {}
-    return { url: '', key: '' };
-  }
-
-  let sb = null;
-  function initSupabaseClient() {
-    const cfg = getSupabaseConfig();
-    const btn = document.getElementById('sb-status-btn');
-    if (cfg.url && cfg.key && window.supabase) {
-      sb = window.supabase.createClient(cfg.url, cfg.key);
-      if (btn) { btn.textContent = 'Banco: Conectado'; btn.className = 'btn btn-sm badge-blue'; }
-      return true;
-    }
-    sb = null;
-    if (btn) { btn.textContent = 'Configurar Banco'; btn.className = 'btn btn-sm badge-red'; }
-    return false;
-  }
-
-  window.openSupabaseSetupModal = function () {
-    const cfg = getSupabaseConfig();
-    openModal(`
-      <h3 style="font-size:17px; font-weight:700; margin-bottom:10px;">Conexão com Supabase (PostgreSQL)</h3>
-      <p class="text-muted" style="font-size:13px; margin-bottom:14px;">
-        Cole a <strong>Project URL</strong> e a <strong>Anon Key</strong> do painel do Supabase (Project Settings → API).
-      </p>
-      <form onsubmit="saveSupabaseSetup(event)">
-        <div class="form-group">
-          <label class="form-label">Project URL*</label>
-          <input class="input font-mono" id="cfg-sb-url" required placeholder="https://seuprojeto.supabase.co" value="${escapeHTML(cfg.url)}" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Anon / Publishable Key*</label>
-          <input class="input font-mono" id="cfg-sb-key" required placeholder="eyJhbGci..." value="${escapeHTML(cfg.key)}" />
-        </div>
-        <div style="display:flex; gap:10px; justify-content:flex-end;">
-          <button type="button" class="btn" onclick="closeModal()">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Conectar Banco</button>
-        </div>
-      </form>
-    `);
-  };
-
-  window.saveSupabaseSetup = function (e) {
-    e.preventDefault();
-    const url = document.getElementById('cfg-sb-url').value.trim().replace(/\/$/, '');
-    const key = document.getElementById('cfg-sb-key').value.trim();
-    if (!url.startsWith('https://') || key.length < 20) return toast('URL ou Chave inválida.', 'error');
-    localStorage.setItem(SB_CFG_KEY, JSON.stringify({ url, key }));
-    initSupabaseClient();
-    closeModal();
-    toast('Conexão com Supabase configurada!');
-  };
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLIC_KEY);
 
   /* =========================================================
      LOGO CENTRALIZADA & UTILITÁRIOS
@@ -463,7 +430,7 @@
   let ERP_SEARCH = '', CRM_SEARCH = '', AUDIT_SEARCH = '';
 
   async function logAuditRemote(action, detail, severity = 'info') {
-    if (!sb || !CURRENT_USER) return;
+    if (!CURRENT_USER) return;
     await sb.from('audit_logs').insert({
       user_email: CURRENT_USER.email,
       role: CURRENT_USER.role,
@@ -472,27 +439,23 @@
   }
 
   window.syncAllData = async function (showToastMsg = false) {
-    if (!sb || !CURRENT_USER) return;
+    if (!CURRENT_USER) return;
     const role = CURRENT_USER.role;
 
     const tasks = [];
-    // Produtos
     tasks.push(sb.from('products').select('*').order('name').then(r => { if (!r.error) STATE.products = r.data || []; }));
 
-    // Clientes & Dívidas
     if (['admin', 'gestor', 'crm', 'caixa'].includes(role)) {
       tasks.push(sb.from('customers').select('*').order('name').then(r => { if (!r.error) STATE.customers = r.data || []; }));
       tasks.push(sb.from('debts').select('*').order('created_at', { ascending: false }).then(r => { if (!r.error) STATE.debts = r.data || []; }));
       tasks.push(sb.from('sales').select('*').order('created_at', { ascending: false }).limit(500).then(r => { if (!r.error) STATE.sales = r.data || []; }));
     }
 
-    // Saídas Financeiras
     if (['admin', 'gestor'].includes(role)) {
       tasks.push(sb.from('expenses').select('*').order('created_at', { ascending: false }).limit(500).then(r => { if (!r.error) STATE.expenses = r.data || []; }));
       tasks.push(sb.from('profiles').select('*').order('created_at', { ascending: false }).then(r => { if (!r.error) STATE.users = r.data || []; }));
     }
 
-    // Auditoria
     if (role === 'admin') {
       tasks.push(sb.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(200).then(r => { if (!r.error) STATE.auditLogs = r.data || []; }));
     }
@@ -531,11 +494,6 @@
     e.preventDefault();
     const alertEl = document.getElementById('login-alert');
     alertEl.classList.add('hidden');
-
-    if (!sb) {
-      openSupabaseSetupModal();
-      return toast('Configure primeiro a URL e Chave do Supabase.', 'error');
-    }
 
     const lock = getLockState();
     if (lock.until > Date.now()) {
@@ -589,7 +547,7 @@
 
   window.logout = async function () {
     await logAuditRemote('LOGOUT', 'Sessão encerrada pelo usuário.', 'info');
-    if (sb) await sb.auth.signOut();
+    await sb.auth.signOut();
     CURRENT_USER = null;
     window.location.hash = '#login';
     document.getElementById('app-view').classList.add('hidden');
@@ -675,6 +633,9 @@
 
   function renderMain() {
     const root = document.getElementById('main-content');
+    const footer = document.getElementById('app-footer');
+    if (footer) footer.classList.toggle('app-footer-pdv-space', ACTIVE_TAB === 'pdv');
+
     switch (ACTIVE_TAB) {
       case 'dashboard': root.innerHTML = renderDashboardView(); break;
       case 'expenses': root.innerHTML = renderExpensesView(); break;
@@ -1292,9 +1253,7 @@
     const btn = document.getElementById('btn-create-op');
     btn.disabled = true; btn.textContent = 'Criando...';
 
-    // Cliente efêmero não sobrescreve a sessão do Admin/Gestor atual!
-    const cfg = getSupabaseConfig();
-    const tempSb = window.supabase.createClient(cfg.url, cfg.key, { auth: { persistSession: false, autoRefreshToken: false } });
+    const tempSb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLIC_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
     const { data, error } = await tempSb.auth.signUp({ email, password, options: { data: { name } } });
 
     if (error || !data.user) {
@@ -1302,7 +1261,6 @@
       return toast('Erro ao criar usuário: ' + (error?.message || 'Verifique se e-mail já existe.'), 'error');
     }
 
-    // Atualiza papel definitivo usando o token do Admin/Gestor (validado por RLS)
     const { error: updErr } = await sb.from('profiles').update({ role, name }).eq('id', data.user.id);
     btn.disabled = false; btn.textContent = 'Criar Credencial na Nuvem';
 
@@ -1651,17 +1609,14 @@
     document.getElementById('login-logo-slot').innerHTML = getLogoHTML(false);
     document.getElementById('topbar-logo-slot').innerHTML = getLogoHTML(true);
     applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
-    initSupabaseClient();
 
-    if (sb) {
-      const { data: { session } } = await sb.auth.getSession();
-      if (session?.user) {
-        const { data: profile } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
-        if (profile && profile.active) {
-          CURRENT_USER = profile;
-          await enterApp();
-          return;
-        }
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.user) {
+      const { data: profile } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
+      if (profile && profile.active) {
+        CURRENT_USER = profile;
+        await enterApp();
+        return;
       }
     }
     window.location.hash = '#login';
